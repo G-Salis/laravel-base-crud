@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Comic;
 use Illuminate\Http\Request;
+use Symfony\Component\CssSelector\Node\AbstractNode;
+use Illuminate\Support\Str;
 
 class ComicController extends Controller
 {
@@ -25,7 +27,7 @@ class ComicController extends Controller
      */
     public function create()
     {
-        //
+        return view('comics.create');
     }
 
     /**
@@ -36,7 +38,25 @@ class ComicController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = $request->all();
+
+        $new_comic = new Comic();
+        $new_comic->title = $data['title'];
+        $new_comic->type = $data['type'];
+        $new_comic->description = $data['description'];
+        $new_comic->thumb = $data['thumb'];
+        $new_comic->series = $data['series'];
+        $new_comic->price = $data['price'];
+        $new_comic->sale_date = $data['sale_date'];
+        $new_comic->slug = Str::slug($new_comic->title, '-');
+
+        // $new_comic->fill($data);
+        $new_comic->save();
+
+        return redirect()->route('comics.show', $new_comic);
+
+
+        
     }
 
     /**
@@ -49,7 +69,11 @@ class ComicController extends Controller
     {
         
         $comic = Comic::find($id);
-        return view('comics.show', compact('comic'));
+        if($comic){
+            return view('comics.show', compact('comic'));
+        }
+        abort(404, 'Prodotto non presente nel DB');
+       
     }
 
     /**
@@ -60,7 +84,11 @@ class ComicController extends Controller
      */
     public function edit($id)
     {
-        //
+        $comic = Comic::find($id);
+        if($comic){
+            return view('comics.edit', compact('comic'));
+        }
+        abort(404, 'Prodotto non presente nel DB');
     }
 
     /**
@@ -70,9 +98,12 @@ class ComicController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Comic $comic)
     {
-        //
+        $data = $request->all();
+        $data['slug'] = Str::slug($data['title'], '-');
+        $comic->update($data);
+        return redirect()->route('comics.show', $comic);
     }
 
     /**
@@ -81,8 +112,10 @@ class ComicController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Comic $comic)
     {
-        //
+        $comic->delete();
+
+        return redirect()->route('comics.index');
     }
 }
