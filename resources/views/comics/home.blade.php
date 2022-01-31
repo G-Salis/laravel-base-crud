@@ -1,6 +1,14 @@
 @extends('layouts.main')
 @section('content')
 
+
+@if (session('deleted'))
+  <div class="alert alert-danger" role="alert">
+    {{session('deleted')}}
+  </div>
+  
+@endif
+
 <div class="container">
   <h1>
     Comics
@@ -33,7 +41,7 @@
         </td>
         <td>
           <div class="button">
-            <form action="{{route('comics.destroy', $comic)}}" method="POST">
+            <form onsubmit="return confirm('Confermi di eliminare: {{$comic->title}}?')" action="{{route('comics.destroy', $comic)}}" method="POST">
               @csrf
               @method('DELETE')
               <button type="submit" class="btn btn-danger">Delete</button>

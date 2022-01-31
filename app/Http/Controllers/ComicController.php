@@ -16,7 +16,7 @@ class ComicController extends Controller
      */
     public function index()
     {
-        $comicList = Comic::paginate(5);
+        $comicList = Comic::orderBy('id', 'desc')->paginate(5);
         return view('comics.home', compact('comicList'));
     }
 
@@ -38,6 +38,42 @@ class ComicController extends Controller
      */
     public function store(Request $request)
     {
+        $request->validate(
+            [
+                'title' => "required|max:50|min:2",
+                'type' => "required|max:20|min:2",
+                'thumb' => "required|max:255",
+                'series' => "required|max:50|min:2",
+                'price' => "required|numeric|min:1",
+                'sale_date' => "required|numeric",
+            ],
+            [
+                'title.required' => 'Titolo è un campo obbligatorio',
+                'title.max' => 'Titolo deve aver massimo 50 caratteri',
+                'title.min' => 'Titolo deve aver minimo 2 caratteri',
+
+                'type.required' => 'Tipo è un campo obbligatorio',
+                'type.max' => 'Tipo deve aver massimo 20 caratteri',
+                'type.min' => 'Tipo deve aver minimo 2 caratteri',
+
+                'thumb.required' => 'Cover è un campo obbligatorio',
+                'thumb.max' => 'URL di Cover deve aver massimo 255 caratteri',
+                
+
+                'series.required' => 'Serie è un campo obbligatorio',
+                'series.max' => 'Serie deve aver massimo 50 caratteri',
+                'series.min' => 'Serie deve aver minimo 2 caratteri',
+
+                'price.required' => 'Prezzo è un campo obbligatorio',
+                'price.numeric' => 'Prezzo deve contenere solo numeri',
+                'price.min' => 'Prezzo deve aver almeno 1 numero',
+
+                'sale_date.required' => 'Pubblicazione è un campo obbligatorio',
+                'sale_date.numeric' => 'Pubblicazione deve contenere solo numeri',
+                
+                
+            ]
+        );
         $data = $request->all();
 
         $new_comic = new Comic();
@@ -100,6 +136,42 @@ class ComicController extends Controller
      */
     public function update(Request $request, Comic $comic)
     {
+        $request->validate(
+            [
+                'title' => "required|max:50|min:2",
+                'type' => "required|max:20|min:2",
+                'thumb' => "required|max:255",
+                'series' => "required|max:50|min:2",
+                'price' => "required|numeric|min:1",
+                'sale_date' => "required|numeric",
+            ],
+            [
+                'title.required' => 'Titolo è un campo obbligatorio',
+                'title.max' => 'Titolo deve aver massimo 50 caratteri',
+                'title.min' => 'Titolo deve aver minimo 2 caratteri',
+
+                'type.required' => 'Tipo è un campo obbligatorio',
+                'type.max' => 'Tipo deve aver massimo 20 caratteri',
+                'type.min' => 'Tipo deve aver minimo 2 caratteri',
+
+                'thumb.required' => 'Cover è un campo obbligatorio',
+                'thumb.max' => 'URL di Cover deve aver massimo 255 caratteri',
+                
+
+                'series.required' => 'Serie è un campo obbligatorio',
+                'series.max' => 'Serie deve aver massimo 50 caratteri',
+                'series.min' => 'Serie deve aver minimo 2 caratteri',
+
+                'price.required' => 'Prezzo è un campo obbligatorio',
+                'price.numeric' => 'Prezzo deve contenere solo numeri',
+                'price.min' => 'Prezzo deve aver almeno 1 numero',
+
+                'sale_date.required' => 'Pubblicazione è un campo obbligatorio',
+                'sale_date.numeric' => 'Pubblicazione deve contenere solo numeri',
+                
+                
+            ]
+        );
         $data = $request->all();
         $data['slug'] = Str::slug($data['title'], '-');
         $comic->update($data);
@@ -116,6 +188,6 @@ class ComicController extends Controller
     {
         $comic->delete();
 
-        return redirect()->route('comics.index');
+        return redirect()->route('comics.index')->with('deleted', "Il Comic $comic->title è stato eliminato");
     }
 }
